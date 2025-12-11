@@ -90,6 +90,20 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setNarratorAction(data.action);
     });
 
+    // Handle global game reset - reload all clients
+    channel.bind('game-reset', () => {
+      // Clear all local state
+      setGame(null);
+      setNarratorText('');
+      setIsNarratorSpeaking(false);
+      setCurrentPlayerInput(null);
+      setGameOver(false);
+      setWon(null);
+      setNarratorAction(null);
+      // Redirect to home
+      window.location.href = '/';
+    });
+
     return () => {
       channel.unbind_all();
       pusher.unsubscribe('parlor-game');

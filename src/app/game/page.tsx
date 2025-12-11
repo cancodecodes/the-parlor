@@ -42,17 +42,14 @@ export default function GamePage() {
     player2?: string;
   }>({});
 
-  // Reset game function
-  const resetGame = async () => {
+  // Reset game function - broadcasts to ALL clients via Pusher
+  const handleResetGame = async () => {
     setIsResetting(true);
     try {
       await fetch('/api/game/reset', { method: 'POST' });
-      setDisplayText('');
-      setLastPlayerInputs({});
-      window.location.href = '/';
+      // Don't redirect here - the Pusher event will handle it for ALL clients
     } catch (error) {
       console.error('Failed to reset game:', error);
-    } finally {
       setIsResetting(false);
     }
   };
@@ -234,7 +231,7 @@ export default function GamePage() {
         <h1 className="text-3xl md:text-4xl font-serif text-amber-100">The Parlor</h1>
         <p className="text-amber-500/60 text-sm">A Murder Mystery</p>
         <button
-          onClick={resetGame}
+          onClick={handleResetGame}
           disabled={isResetting}
           className="absolute top-0 right-0 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors disabled:opacity-50"
         >

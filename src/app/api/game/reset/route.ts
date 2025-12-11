@@ -6,12 +6,16 @@ export async function POST() {
   try {
     const game = resetGame();
 
+    // Broadcast reset to ALL clients globally
+    await triggerGameEvent('game-reset', {
+      timestamp: Date.now(),
+      message: 'Game has been reset by host'
+    });
+
     await triggerGameEvent('game-state', {
       state: game.state,
       game: game,
     });
-
-    await triggerGameEvent('game-reset', {});
 
     return NextResponse.json({ success: true, game });
   } catch (error) {
