@@ -36,10 +36,26 @@ export default function GamePage() {
   const [displayText, setDisplayText] = useState('');
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [showAccusationModal, setShowAccusationModal] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const [lastPlayerInputs, setLastPlayerInputs] = useState<{
     player1?: string;
     player2?: string;
   }>({});
+
+  // Reset game function
+  const resetGame = async () => {
+    setIsResetting(true);
+    try {
+      await fetch('/api/game/reset', { method: 'POST' });
+      setDisplayText('');
+      setLastPlayerInputs({});
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Failed to reset game:', error);
+    } finally {
+      setIsResetting(false);
+    }
+  };
 
   // Track player inputs
   useEffect(() => {
@@ -214,9 +230,16 @@ export default function GamePage() {
       />
 
       {/* Header */}
-      <header className="text-center mb-6">
+      <header className="text-center mb-6 relative">
         <h1 className="text-3xl md:text-4xl font-serif text-amber-100">The Parlor</h1>
         <p className="text-amber-500/60 text-sm">A Murder Mystery</p>
+        <button
+          onClick={resetGame}
+          disabled={isResetting}
+          className="absolute top-0 right-0 px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors disabled:opacity-50"
+        >
+          {isResetting ? 'Resetting...' : 'Reset Game'}
+        </button>
       </header>
 
       {/* Scene */}
